@@ -35,19 +35,22 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	private class DoubleLinkedListIterator<T> implements Iterator<T> {
 		DoubleNode<T> node;
 		public DoubleLinkedListIterator(DoubleNode<T> aux) {
+			node = aux;
 		}
 
 		@Override
 		public boolean hasNext() {
-			// TODO
-			return false;
+			return (node.next!=null);
 		}
 	
 
 		@Override
 		public T next() {
-		// TODO
-			return null;
+			 if (! hasNext())
+					throw new NoSuchElementException();
+				 	T result = node.elem;
+					node = node.next;
+					return result; 
 		}
 	}
 
@@ -59,19 +62,21 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	private class DoubleLinkedListIteratorReverse<T> implements Iterator<T> {
 		DoubleNode<T> node;
 		public DoubleLinkedListIteratorReverse(DoubleNode<T> aux) {
-			// TODO	
+			node = aux;	
 			}
 
 		@Override
 		public boolean hasNext() {
-			// TODO	
-			return false;
+			return(node.prev != null);
 			}
 
 		@Override
 		public T next() {
-			// TODO
-			return null;
+			if (! hasNext())
+				throw new NoSuchElementException();
+			 	T result = node.elem;
+				node = node.prev;
+				return result; 
 		}
 	}
 	
@@ -79,7 +84,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	private class DoubleLinkedListIteratorOddPositions<T> implements Iterator<T> {
 		DoubleNode<T> node;
 		public DoubleLinkedListIteratorOddPositions(DoubleNode<T> aux) {
-			//TODO
+			node = aux;
 		}
 
 		@Override
