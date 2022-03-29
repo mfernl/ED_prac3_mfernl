@@ -89,20 +89,23 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 		@Override
 		public boolean hasNext() {
-			// TODO
-			return false;
+			return(node.next.next !=null);
 		}
 
 		@Override
 		public T next() {
-			// TODO
-			return null;
-		}		
+			if (! hasNext())
+				throw new NoSuchElementException();
+				T result = node.elem;
+				node = node.next.next;
+				return result; 
+			}		
 	}
 	
 	@SuppressWarnings("hiding")
 	private class DoubleLinkedListIteratorProgressReverse<T> implements Iterator<T> {
-		DoubleNode<T> node;
+		DoubleNode<T> node , naux;
+		private int progress = 1;
 	// Anadir si hace falta mas atributos
 		public DoubleLinkedListIteratorProgressReverse(DoubleNode<T> aux) {
 			node = aux;
@@ -110,15 +113,23 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 		@Override
 		public boolean hasNext() {
-			//TODO
-			return false;
+			naux = node;
+			for(int i = 0; i <= progress; i++) {
+				naux=naux.next;
+			}
+			return (naux !=null);
 		}
 
 		@Override
 		public T next() {
-			//TODO
-			
-			return null;
+			if (! hasNext())
+				throw new NoSuchElementException();
+				T result = node.elem;
+				for(int i = 0; i <= progress; i++) {
+					node=node.next;
+				}
+				progress++;
+				return result;			
 		}
 	}
 
@@ -134,28 +145,50 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public boolean isEmpty() {
-		//TODO
-		return false;
+		return (front == null);
 		}
 
 
 	@Override
 	public void clear() {
-		//TODO
-		
+		DoubleNode<T> aux;
+		aux = null;
+		front = aux;
 	}
 
 	@Override
 	public void addFirst(T elem) {
-		// TODO Auto-generated method stub
-		
-	}
+		if(elem == null) {
+			throw new NullPointerException("");
+		}
+		else if(isEmpty()) {
+			DoubleNode<T> node = new DoubleNode<T>(elem);
+			front = node;
+			}else {
+				DoubleNode<T> w = new DoubleNode<T>(elem);
+				DoubleNode<T> aux;
+				aux = front.next;
+				front = w;
+				w.next = aux;
+			}
+		}	
 
 
 	@Override
 	public void addLast(T elem) {
-		// TODO Auto-generated method stub
-		
+		if(elem == null) {
+			throw new NullPointerException("");
+		}
+		else if(isEmpty()) {
+			DoubleNode<T> node = new DoubleNode<T>(elem);
+			last = node;
+			}else {
+				DoubleNode<T> w = new DoubleNode<T>(elem);
+				DoubleNode<T> aux;
+				aux = last.prev;
+				last = w;
+				w.prev = aux;
+			}		
 	}
 
 
