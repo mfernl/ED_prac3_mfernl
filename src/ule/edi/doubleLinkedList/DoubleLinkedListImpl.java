@@ -104,7 +104,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	
 	@SuppressWarnings("hiding")
 	private class DoubleLinkedListIteratorProgressReverse<T> implements Iterator<T> {
-		DoubleNode<T> node , naux;
+		DoubleNode<T> node , paux;
 		private int progress = 1;
 	// Anadir si hace falta mas atributos
 		public DoubleLinkedListIteratorProgressReverse(DoubleNode<T> aux) {
@@ -113,11 +113,11 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 		@Override
 		public boolean hasNext() {
-			naux = node;
+			paux = node;
 			for(int i = 0; i <= progress; i++) {
-				naux=naux.next;
+				paux=paux.prev;
 			}
-			return (naux !=null);
+			return (paux !=null);
 		}
 
 		@Override
@@ -145,7 +145,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public boolean isEmpty() {
-		return (front == null);
+		return (front == null && last == null);
 		}
 
 
@@ -154,6 +154,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		DoubleNode<T> aux;
 		aux = null;
 		front = aux;
+		last = aux;
 	}
 
 	@Override
@@ -164,12 +165,12 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		else if(isEmpty()) {
 			DoubleNode<T> node = new DoubleNode<T>(elem);
 			front = node;
+			last = node;
 			}else {
 				DoubleNode<T> w = new DoubleNode<T>(elem);
-				DoubleNode<T> aux;
-				aux = front.next;
+				w.next = front;
+				front.prev = w;
 				front = w;
-				w.next = aux;
 			}
 		}	
 
@@ -182,20 +183,43 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		else if(isEmpty()) {
 			DoubleNode<T> node = new DoubleNode<T>(elem);
 			last = node;
+			front = node;
 			}else {
 				DoubleNode<T> w = new DoubleNode<T>(elem);
-				DoubleNode<T> aux;
-				aux = last.prev;
+				w.prev = last;
+				last.next = w;
 				last = w;
-				w.prev = aux;
 			}		
 	}
 
 
 	@Override
 	public void addPos(T elem, int position) {
-		// TODO Auto-generated method stub
-		
+		int vuelta = position-1;
+		if(elem == null) {
+			throw new NullPointerException();
+		}else if(position <= 0) {
+			throw new IllegalArgumentException();
+		}else {
+			DoubleNode<T> nuevo = new DoubleNode<T>(elem);
+			DoubleNode<T> aux;
+			if(position == 1) {
+				addFirst(elem);
+			}else {
+				aux = front;
+				while(aux.next != null && vuelta != 0) {
+					aux = aux.next;
+					vuelta--;
+				}if(aux.next == null && vuelta !=0) {
+					addLast(elem);
+				}else {
+					aux.prev.next = nuevo;
+					nuevo.prev = aux.prev;
+					nuevo.next = aux;
+					aux.prev = nuevo;
+				}	
+			}
+		}
 	}
 
 
@@ -312,8 +336,16 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public String toString() {
-		// TODO
-		return null;
+		StringBuffer salida = new StringBuffer("");
+		salida.append("(");
+		DoubleNode<T> aux;
+		aux = front;
+		while(aux.next != null) {
+			salida.append(aux.elem + " ");
+			aux = aux.next;
+		}
+		salida.append(aux.elem + " )");
+		return salida.toString();
 	}
 
 	@Override

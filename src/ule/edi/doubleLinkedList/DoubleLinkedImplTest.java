@@ -138,6 +138,8 @@ public class DoubleLinkedImplTest {
 		Assert.assertEquals("(1 2 3 2 7 5 )", lista.toString());
 		lista.addPos("6", 10);
 		Assert.assertEquals("(1 2 3 2 7 5 6 )", lista.toString());
+		lista.addPos("6", 4);
+		Assert.assertEquals("(1 2 3 6 2 7 5 6 )", lista.toString());
 	}
 	
 
