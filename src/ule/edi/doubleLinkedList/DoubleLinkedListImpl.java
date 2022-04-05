@@ -225,38 +225,108 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public void addBefore(T elem, T target) {
-		// TODO Auto-generated method stub
+		if(elem == null) {
+			throw new NullPointerException();
+		}else if(target == null) {
+				throw new NullPointerException();
+		}else if(contains(target)) {
+			throw new NoSuchElementException();
+		}else {
+			DoubleNode<T> nuevo = new DoubleNode<T>(elem);
+			DoubleNode<T> aux;
+			aux = front;
+			if(front.equals(target)) {
+				addFirst(elem);
+			}else {
+				while(!aux.elem.equals(target) && aux.next != null) {
+					aux = aux.next;
+				}
+				if(aux.next == null) {
+					addLast(elem);
+				}else {
+					aux.prev.next = nuevo;
+					nuevo.prev = aux.prev;
+					nuevo.next = aux;
+					aux.prev = nuevo;
+				}
+			}
+		}
 		
 	}
 
 	@Override
 	public T getElemPos(int position) {
-		
-		//TODO
-		return null;
+		DoubleNode<T> aux;
+		if(1>position || position>size()) {
+			throw new IllegalArgumentException();
+		}else {
+			int vuelta = position-1;
+			aux = front;
+			while(aux.next != null && vuelta != 0) {
+				aux = aux.next;
+				vuelta--;
+			}
+		}
+		return aux.elem;
 	}
 
 
 	@Override
 	public int getPosFirst(T elem) {
-		//TODO
-
-		return 0;
+		int pos = 1;
+		DoubleNode<T> aux;
+		if(elem == null) {
+			throw new NullPointerException();
+		}else {
+			if(!contains(elem)) {
+				throw new NoSuchElementException();
+			}
+			aux = front;
+			while(!aux.elem.equals(elem)) {
+				aux=aux.next;
+				pos++;
+			}
+		}
+		return pos;
 	}
 
 
 	@Override
 	public int getPosLast(T elem) {
-		//TODO
-
-		return 0;
+		int pos = size();
+		DoubleNode<T> aux;
+		if(elem == null) {
+			throw new NullPointerException();
+		}else {
+			if(!contains(elem)) {
+				throw new NoSuchElementException();
+			}
+			aux = last;
+			while(!aux.elem.equals(elem)) {
+				aux = aux.prev;
+				pos--;
+			}
+		}
+		return pos;
 	}
 
 	
 	@Override
 	public T removeLast()  throws EmptyCollectionException{
-		//TODO
-		return null;
+		DoubleNode <T> aux;
+		if(isEmpty()) {
+			throw new EmptyCollectionException("");
+		}else if(size() == 1) {
+			aux = last;
+			front = null;
+			last = null;
+			return aux.elem;
+		}else {
+			aux = last;
+			last.prev.next = null;
+			last = last.prev;
+			return aux.elem;
+		}
 	}
 	
 
@@ -300,8 +370,17 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public int size() {
-		//TODO
-		return 0;
+		int size = 1;
+		DoubleNode <T> aux;
+		aux = front;
+		if(front == null) {
+			return 0;
+		}else {
+			while(aux.next != null) {
+				size++;
+			}
+		return size;
+		}
 	}
 
 
