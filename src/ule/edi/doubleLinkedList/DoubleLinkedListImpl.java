@@ -470,9 +470,13 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 					return false;
 				}
 			}else {
+				current = front.next;
 				for(int i=1; i<size(); i++) {
-					if(elem.equals)
+					if(current.elem.equals(elem)) {
+						return true;
+					}
 				}
+				return false;
 			}
 		}
 	}
@@ -496,15 +500,26 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public String toStringReverse() {
-		// TODO
-		return "";
+		StringBuffer salida = new StringBuffer();
+		DoubleNode<T> current;
+		salida.append("(");
+		if(!isEmpty()) {
+			current = last;
+			while(current.prev != null) {
+				salida.append(current.elem + " ");
+				current = current.prev;
+			}
+		}
+		salida.append(")");
+		return salida.toString();
 	}
+	
 
 
 	@Override
 	public int maxRepeated() {
-	// TODO
-		return 0;
+		int[] lista = new int[20];
+		DoubleNode<T> current;
 	}
 
 
