@@ -332,39 +332,149 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public T removePos(int pos)  throws EmptyCollectionException{
-		// TODO
-		return null;
-	
-
+		DoubleNode <T> current,previous,result;
+		if(isEmpty()) {
+			throw new EmptyCollectionException("");
+		}else if(1>pos || pos>size()) {
+			throw new IllegalArgumentException();
+		}else {
+			if(pos == 1) {
+				result = front;
+				front.next.prev = null;
+				front = front.next;
+			}else if(pos == size()) {
+				result = last;
+				last.prev.next = null;
+				last = last.prev;
+			}else{
+				previous = front;
+				current = front.next;
+				for(int i=1; i<pos ;i++) {
+					previous = current;
+					current = current.next;
+				}
+				result = current;
+				current.next.prev = previous;
+				previous.next = current.next;
+				
+			}
+		}
+		return result.elem;
 	}
 
 
 	@Override
 	public int removeN(T elem, int times) throws EmptyCollectionException {
-		// TODO Auto-generated method stub
-		return 0;
+		DoubleNode <T> current,previous;
+		int n = 0;
+		int contador = times;
+		if(elem == null) {
+			throw new NullPointerException();
+		}else if(times<1) {
+			throw new IllegalArgumentException();
+		}else if(isEmpty()) {
+			throw new EmptyCollectionException("");
+		}else if(!contains(elem)) {
+			throw new NoSuchElementException();
+		}else {
+			if(front.elem.equals(elem)) {
+				front.next.prev = null;
+				front = front.next;
+				contador--;
+				n++;
+			}else if(last.elem.equals(elem)) {
+				last.prev.next = null;
+				last = last.prev;
+				contador--;
+				n++;
+			}else{
+				previous = front;
+				current = front.next;
+				while(contador != 0 || current.next == null) {
+					if(current.elem.equals(elem)) {
+						current.next.prev = previous;
+						previous.next = current.next;
+						contador--;
+						n++;
+					}
+					previous = current;
+					current = current.next;
+				}
+				
+			}
+		}
+		return n;
 	}
 
 
 	@Override
 	public T removeSecond() throws EmptyCollectionException {
-		// TODO Auto-generated method stub
-		return null;
+		DoubleNode<T> result;
+		if(isEmpty()) {
+			throw new EmptyCollectionException("");
+		}else if(size()==1) {
+			throw new NoSuchElementException();
+		}else {
+			result = front.next;
+			front.next.next.prev = front;
+			front.next = front.next.next;
+		}
+		return result.elem;
 	}
 
 
 
 	@Override
 	public DoubleList<T> copy() {
-		// TODO Auto-generated method stub
-		return null;
+		DoubleLinkedListImpl<T> copia = new DoubleLinkedListImpl<T>();
+		DoubleNode<T> current,previous,currentC,previousC;
+		if(isEmpty()) {
+			return copia;
+		}else if(size() == 1) {
+			current = front;
+			copia.front = current;
+			copia.last = current;
+			return copia;
+		}else {
+			current = front.next;
+			previous = front;
+			copia.front = previous;
+			copia.front.next = current;
+			copia.front.next.prev = previous;
+			currentC = copia.front.next;
+			previousC = copia.front;
+			for(int i=1; i<size(); i++) {
+				previous = current;
+				current = current.next;
+				previousC = currentC;
+				currentC = current;
+				copia.addLast(current.elem);
+			}
+		}
+		return copia;
 	}
 
 
 	@Override
 	public boolean contains(T elem) {
-		//TODO
-		return false;
+		DoubleNode<T> current;
+		if(isEmpty()) {
+			return false;
+		}else if(elem == null) {
+			throw new NullPointerException("");
+		}else{
+			if(size()==1) {
+				if(front.elem.equals(elem)) {
+					return true;
+				}else {
+					return false;
+				}
+			}else {
+				for(int i=1; i<size(); i++) {
+					if(elem.equals)
+				}
+			}
+		}
 	}
 
 
