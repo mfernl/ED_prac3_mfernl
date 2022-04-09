@@ -229,20 +229,23 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			throw new NullPointerException();
 		}else if(target == null) {
 				throw new NullPointerException();
-		}else if(contains(target)) {
+		}else if(contains(target) == false) {
 			throw new NoSuchElementException();
 		}else {
 			DoubleNode<T> nuevo = new DoubleNode<T>(elem);
 			DoubleNode<T> aux;
 			aux = front;
-			if(front.equals(target)) {
+			if(front.elem.equals(target)) {
 				addFirst(elem);
 			}else {
 				while(!aux.elem.equals(target) && aux.next != null) {
 					aux = aux.next;
 				}
 				if(aux.next == null) {
-					addLast(elem);
+					aux.prev.next = nuevo;
+					nuevo.prev = aux.prev;
+					nuevo.next = aux;
+					aux.prev = nuevo;
 				}else {
 					aux.prev.next = nuevo;
 					nuevo.prev = aux.prev;
@@ -338,7 +341,10 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		}else if(1>pos || pos>size()) {
 			throw new IllegalArgumentException();
 		}else {
-			if(pos == 1) {
+			if(front == last) {
+				result = front;
+				clear();
+			}else if(pos == 1) {
 				result = front;
 				front.next.prev = null;
 				front = front.next;
@@ -349,7 +355,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			}else{
 				previous = front;
 				current = front.next;
-				for(int i=1; i<pos ;i++) {
+				for(int i=1; i<pos-1 ;i++) {
 					previous = current;
 					current = current.next;
 				}
@@ -376,31 +382,37 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			throw new EmptyCollectionException("");
 		}else if(!contains(elem)) {
 			throw new NoSuchElementException();
-		}else {
+		}else if(size()==1) {
+			clear();
+			n=1;
+		}else{
 			if(front.elem.equals(elem)) {
 				front.next.prev = null;
 				front = front.next;
 				contador--;
 				n++;
-			}else if(last.elem.equals(elem)) {
+			}
+			if(last.elem.equals(elem)) {
 				last.prev.next = null;
 				last = last.prev;
 				contador--;
 				n++;
-			}else{
+			}
+			if(size() >1) {
 				previous = front;
 				current = front.next;
-				while(contador != 0 || current.next == null) {
+				while(contador != 0 && current.next != null) {
 					if(current.elem.equals(elem)) {
 						current.next.prev = previous;
 						previous.next = current.next;
 						contador--;
 						n++;
+						current = current.next;
+					}else {
+						previous = current;
+						current = current.next;
 					}
-					previous = current;
-					current = current.next;
 				}
-				
 			}
 		}
 		return n;
@@ -457,44 +469,47 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public boolean contains(T elem) {
+		boolean contains = false;
 		DoubleNode<T> current;
 		if(isEmpty()) {
-			return false;
+			contains = false;
 		}else if(elem == null) {
 			throw new NullPointerException("");
 		}else{
 			if(size()==1) {
 				if(front.elem.equals(elem)) {
-					return true;
+					contains = true;
 				}else {
-					return false;
+					contains = false;
 				}
 			}else {
-				current = front.next;
-				for(int i=1; i<size(); i++) {
+				current = front;
+				for(int i=0; i<size(); i++) {
 					if(current.elem.equals(elem)) {
-						return true;
+						contains = true;
 					}
+					current = current.next;
 				}
-				return false;
 			}
 		}
+		return contains;
 	}
 
 
 	@Override
 	public int size() {
-		int size = 1;
-		DoubleNode <T> aux;
-		aux = front;
-		if(front == null) {
-			return 0;
+		int size = 0;
+		if(isEmpty()) {
 		}else {
+			DoubleNode <T> aux;
+			aux = front;
 			while(aux.next != null) {
 				size++;
+				aux = aux.next;
 			}
-		return size;
+			size++;
 		}
+		return size;
 	}
 
 
@@ -518,24 +533,77 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public int maxRepeated() {
-		int[] lista = new int[20];
-		DoubleNode<T> current;
+		DoubleNode<T> current, aux;
+		current = front;
+		int maxRep = 0;
+		while(current != null) {
+			int rep = 0;
+			aux = current;
+			while(current != null) {
+				if(aux.elem.equals(current.elem)) {
+					rep++;
+				}
+				current = current.next;
+			}
+			if(rep > maxRep) {
+				maxRep = rep;
+			}
+		}
+		return maxRep;
 	}
 
 
 	@Override
 	public boolean sameContent(DoubleList<T> other) {
-		// TODO 
-		return false;
+		DoubleList<T> copia1 = new DoubleLinkedListImpl<T>();
+		DoubleList<T> copia2 = new DoubleLinkedListImpl<T>();
+		DoubleNode<T> current1,current2;
+		if(other == null) {
+			throw new NullPointerException();
+		}else
+		if(size() != other.size()) {
+			return  false;
+		}else {
+			copia1 = copy();
+			copia2 = other.copy();
+			boolean mismoElem = false;
+			if(copia1.equals(copia2)) {
+				return true;
+			}else {
+				return false;
+			}
+		}
 	}
 
 
 
 	@Override
 	public String toStringFromUntil(int from, int until) {
-		// TODO
-				
-		return null;
+		StringBuffer salida = new StringBuffer("");
+		if(from<0 || until<0 || until<from) {
+			throw new IllegalArgumentException();
+		}else if(from>=size()) {
+			salida.append("()");
+		}else {
+			salida.append("(");
+			DoubleNode<T> aux;
+			aux = front;
+			for(int i=0; i<from-1;i++) {
+				aux = aux.next;
+			}if(until >= size()) {
+				while(aux.next != null) {
+					salida.append(aux.elem + " ");
+					aux = aux.next;
+				}
+			}else {
+				for(int i=0;i<until-from;i++) {
+					salida.append(aux.elem + " ");
+					aux = aux.next;
+				}
+				salida.append(aux.elem + " )");
+			}
+		}
+		return salida.toString();
 	}
 
 	@Override
@@ -543,12 +611,16 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		StringBuffer salida = new StringBuffer("");
 		salida.append("(");
 		DoubleNode<T> aux;
-		aux = front;
-		while(aux.next != null) {
-			salida.append(aux.elem + " ");
-			aux = aux.next;
+		if(isEmpty()) {
+			salida.append(")");
+		}else{
+			aux = front;
+			while(aux.next != null) {
+				salida.append(aux.elem + " ");
+				aux = aux.next;
+			}
+			salida.append(aux.elem + " )");
 		}
-		salida.append(aux.elem + " )");
 		return salida.toString();
 	}
 
@@ -565,15 +637,13 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public Iterator<T> oddPositionsIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DoubleLinkedListIteratorOddPositions<>(front);
 	}
 
 
 	@Override
 	public Iterator<T> progressReverseIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DoubleLinkedListIteratorProgressReverse<>(last);
 	}
 
 	
@@ -584,8 +654,31 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public String toStringFromUntilReverse(int from, int until) {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuffer salida = new StringBuffer("");
+		if(from<0 || until<0 || until<from) {
+			throw new IllegalArgumentException();
+		}else if(from<1) {
+			salida.append("()");
+		}else {
+			salida.append("(");
+			DoubleNode<T> aux;
+			aux = last;
+			for(int i=0; i<until-1;i++) {
+				aux = aux.prev;
+			}if(from >= size()) {
+				while(aux.prev != null) {
+					salida.append(aux.elem + " ");
+					aux = aux.prev;
+				}
+			}else {
+				for(int i=0;i<from-until;i++) {
+					salida.append(aux.elem + " ");
+					aux = aux.prev;
+				}
+				salida.append(aux.elem + " )");
+			}
+		}
+		return salida.toString();
 	}
 
 
