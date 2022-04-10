@@ -99,7 +99,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			}else {
 				if(node == null) {
 					return false;
-				}else if(node.next == null) {
+				}else if(node != last && node.next == null) {
 					return false;
 				}else if( previous == false && node.next.next == null) {
 					return false;
@@ -117,7 +117,11 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 				if(size()==1) {
 					node = null;
 				}else {
+					if(node == last) {
+						node = null;
+					}else {
 					node = node.next.next;
+					}
 				}
 				return result; 
 			}		
@@ -136,13 +140,17 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		public boolean hasNext() {
 			boolean hasnext = false;
 			paux = node;
-			for(int i = 0; i < progress; i++) {
-				if(paux != null && paux.prev != null) {
-					paux = paux.prev;
+			if(isEmpty()) {
+				
+			}else {
+				for(int i = 0; i < progress; i++) {
+					if(paux != null && paux.prev != null) {
+						paux = paux.prev;
+					}
 				}
-			}
-			if(paux.prev != null) {
-				hasnext = true;
+				if(paux.prev != null) {
+					hasnext = true;
+				}
 			}
 			return hasnext;
 		}
@@ -481,8 +489,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			return copia;
 		}else if(size() == 1) {
 			current = front;
-			copia.front = current;
-			copia.last = current;
+			copia.addLast(current.elem);
 			return copia;
 		}else {
 			current = front;
@@ -598,12 +605,12 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 				if(!other.contains(current.elem)) {
 					return false;
 				}else {
-					for(int i=0; i < other.size();i++) {
+					for(int i=1; i <= other.size();i++) {
 						if(other.getElemPos(i).equals(current.elem)) {
 							n1++;
 						}
 					}
-					for(int i=0; i < size();i++) {
+					for(int i=1; i <= size();i++) {
 						if(getElemPos(i).equals(current.elem)) {
 							n2++;
 						}
@@ -700,22 +707,31 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	@Override
 	public String toStringFromUntilReverse(int from, int until) {
 		StringBuffer salida = new StringBuffer("");
-		if(from<0 || until<0 || until<from) {
+		if(from<0 || until<0 || until>from) {
 			throw new IllegalArgumentException();
 		}else if(from<1) {
-			salida.append("()");
+			salida.append("()"); 
 		}else {
 			salida.append("(");
 			DoubleNode<T> aux;
-			aux = last;
-			for(int i=0; i<until-1;i++) {
-				aux = aux.prev;
-			}if(from >= size()) {
-				while(aux.prev != null) {
+			aux = front;
+			if(from >= size()) {
+				aux = last;
+			}else {
+			for(int i=0; i<from-1;i++) {
+				aux = aux.next;
+			}
+			}
+			if(from >= size()) {
+				if(until >= size()) {
+					
+				}else {
+					for(int i=0;i<size()-until;i++) {
+						salida.append(aux.elem + " ");
+						aux = aux.prev;
+					}
 					salida.append(aux.elem + " ");
-					aux = aux.prev;
 				}
-				salida.append(aux.elem + " ");
 			}else {
 				for(int i=0;i<from-until;i++) {
 					salida.append(aux.elem + " ");

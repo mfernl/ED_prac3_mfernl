@@ -296,6 +296,20 @@ public class DoubleLinkedImplTest {
 		Assert.assertEquals("()", lista.toString());
 	}
 	
+	@Test(expected=NoSuchElementException.class)
+	public void testRemoveSecond() throws EmptyCollectionException {
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		lista.addFirst("2");
+		lista.addLast("3");
+		lista.addLast("1");
+		Assert.assertEquals("(2 3 1 )", lista.toString());
+		Assert.assertEquals("3", lista.removeSecond());
+		Assert.assertEquals("(2 1 )", lista.toString());
+		Assert.assertEquals("1", lista.removeSecond());
+		Assert.assertEquals("(2 )", lista.toString());
+		Assert.assertEquals("2", lista.removeSecond());
+	}
+	
 	@Test(expected=IllegalArgumentException.class)
 	public void testRemovePosDefecto() throws EmptyCollectionException {
 		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
@@ -319,7 +333,7 @@ public class DoubleLinkedImplTest {
 		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
 		lista.addFirst("2");
 		lista.addLast("3");
-		lista.addLast("1");
+		lista.addLast("1"); 
 		lista.addBefore("1", "2");
 		lista.addBefore("2", "2");
 		lista.addBefore("2", "1");
@@ -406,6 +420,23 @@ public class DoubleLinkedImplTest {
 		Assert.assertEquals("()", lista.toStringFromUntil(8, 10));
 	}
 	
+	@Test
+	public void toStringFromUntilReverseTest() {
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		lista.addFirst("2");
+		lista.addLast("3");
+		lista.addLast("1");
+		lista.addBefore("1", "2");
+		lista.addBefore("2", "2");
+		lista.addBefore("2", "1");
+		Assert.assertEquals("(2 1 2 2 3 1 )", lista.toString());
+		Assert.assertEquals("(2 1 2 )", lista.toStringFromUntilReverse(3,1 ));
+		Assert.assertEquals("(1 3 2 2 1 2 )", lista.toStringFromUntilReverse(6, 1));
+		Assert.assertEquals("(1 3 2 2 1 2 )", lista.toStringFromUntilReverse(10, 1));
+		Assert.assertEquals("(1 3 2 )", lista.toStringFromUntilReverse(7, 4));
+		Assert.assertEquals("()", lista.toStringFromUntilReverse(10, 8));
+	}
+	
 	@Test(expected=IllegalArgumentException.class)
 	public void toStringFromUntilFromNegativoTest() {
 		listaConElems.toStringFromUntil(-3, 4);
@@ -422,6 +453,15 @@ public class DoubleLinkedImplTest {
 	public void oddPositionsIteratorFalloTest() {
 
 		Iterator<String> iterator = lv.oddPositionsIterator();
+		Assert.assertFalse(iterator.hasNext());
+		iterator.next();
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void oddPositionsIteratorUnicoElemTest() {
+
+		Iterator<String> iterator = lv.oddPositionsIterator();
+		lv.addFirst("A");
 		Assert.assertFalse(iterator.hasNext());
 		iterator.next();
 	}
@@ -459,6 +499,38 @@ public class DoubleLinkedImplTest {
 		iterator.next();
 	}
 	
+	@Test(expected=NoSuchElementException.class)
+	public void IteratorTest() {
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		lista.addFirst("2");
+		lista.addLast("3");
+		Assert.assertEquals("(2 3 )", lista.toString());
+		lista.addLast("1");
+		Assert.assertEquals("(2 3 1 )", lista.toString());
+			
+		lista.addBefore("1", "2");
+		Assert.assertEquals("(1 2 3 1 )", lista.toString());
+		
+		lista.addBefore("2", "2");
+		Assert.assertEquals("(1 2 2 3 1 )", lista.toString());
+		
+		lista.addBefore("2", "1");
+		Assert.assertEquals("(2 1 2 2 3 1 )", lista.toString());
+		
+		lista.addLast("4"); 
+		
+		lista.addLast("6");
+		Assert.assertEquals("(2 1 2 2 3 1 4 6 )", lista.toString());
+		Iterator<String> iterator = lista.iterator();
+		StringBuffer nuevo = new StringBuffer("(");
+		while(iterator.hasNext()) {
+			nuevo.append(iterator.next()+ " ");
+		}
+		nuevo.append(")");
+		Assert.assertEquals("(2 1 2 2 3 1 4 6 )", nuevo.toString());
+		Assert.assertFalse(iterator.hasNext());
+		iterator.next();
+	}
 	
 	@Test(expected=NoSuchElementException.class)
 	public void reverseIteratorTest() {
@@ -494,7 +566,7 @@ public class DoubleLinkedImplTest {
 	}
 	
 	@Test(expected=NoSuchElementException.class)
-	public void oddPositionsIteratorTest() {
+	public void oddPositionsIteratorParTest() {
 		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
 		lista.addFirst("2");
 		lista.addLast("3");
@@ -522,9 +594,72 @@ public class DoubleLinkedImplTest {
 		iterator.next();
 	}
 
+	@Test(expected=NoSuchElementException.class)
+	public void oddPositionsIteratorImparTest() {
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		lista.addFirst("2");
+		lista.addLast("3");
+		Assert.assertEquals("(2 3 )", lista.toString());
+		lista.addLast("1");
+		Assert.assertEquals("(2 3 1 )", lista.toString());
+			
+		lista.addBefore("1", "2");
+		Assert.assertEquals("(1 2 3 1 )", lista.toString());
+		
+		lista.addBefore("2", "2");
+		Assert.assertEquals("(1 2 2 3 1 )", lista.toString());
+		
+		Iterator<String> iterator = lista.oddPositionsIterator();
+		StringBuffer nuevo = new StringBuffer("(");
+		while(iterator.hasNext()) {
+			nuevo.append(iterator.next()+ " ");
+		}
+		nuevo.append(")");
+		Assert.assertEquals("(1 2 1 )", nuevo.toString());
+		Assert.assertFalse(iterator.hasNext());
+		iterator.next();
+	}
+	
 	@Test
 	public void testCopy() {
 		Assert.assertEquals(6, listaConElems.size());
 		Assert.assertEquals(listaConElems.copy().toString(), listaConElems.toString());
+		assertEquals(0,lv.copy().size());
+		lv.addFirst("A");
+		assertEquals(1,lv.copy().size());
 	}
+	
+	@Test
+	public void testSameContentDiffOrder() {
+		DoubleLinkedListImpl<String> lista1 = new DoubleLinkedListImpl<String>();
+		DoubleLinkedListImpl<String> lista2 = new DoubleLinkedListImpl<String>();
+		lista1.addFirst("2");
+		lista1.addLast("3");
+		lista1.addLast("2");
+		lista1.addLast("3");
+		lista2.addFirst("2");
+		lista2.addLast("3");
+		lista2.addLast("3");
+		lista2.addLast("2");
+		assertTrue(lista1.sameContent(lista2));
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void progressIteratorNextInEmptyList() {
+		
+		Iterator<String> iterator = lv.progressReverseIterator();
+		iterator.next();
+	}
+	
+	@Test
+	public void testRemoveNDosElem() throws EmptyCollectionException {
+		lv.addFirst("A");
+		lv.addLast("B");
+		assertEquals("(B A )",lv.toStringReverse());
+		lv.removeN("B", 2);
+		assertEquals("(A )",lv.toStringReverse());
+		lv.removeN("A",2);
+		assertEquals("()",lv.toStringReverse());
+	}
+	
 }
