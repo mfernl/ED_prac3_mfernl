@@ -460,5 +460,71 @@ public class DoubleLinkedImplTest {
 	}
 	
 	
+	@Test(expected=NoSuchElementException.class)
+	public void reverseIteratorTest() {
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		lista.addFirst("2");
+		lista.addLast("3");
+		Assert.assertEquals("(2 3 )", lista.toString());
+		lista.addLast("1");
+		Assert.assertEquals("(2 3 1 )", lista.toString());
+			
+		lista.addBefore("1", "2");
+		Assert.assertEquals("(1 2 3 1 )", lista.toString());
+		
+		lista.addBefore("2", "2");
+		Assert.assertEquals("(1 2 2 3 1 )", lista.toString());
+		
+		lista.addBefore("2", "1");
+		Assert.assertEquals("(2 1 2 2 3 1 )", lista.toString());
+		
+		lista.addLast("4");
+		
+		lista.addLast("6");
+		Assert.assertEquals("(2 1 2 2 3 1 4 6 )", lista.toString());
+		Iterator<String> iterator = lista.reverseIterator();
+		StringBuffer nuevo = new StringBuffer("(");
+		while(iterator.hasNext()) {
+			nuevo.append(iterator.next()+ " ");
+		}
+		nuevo.append(")");
+		Assert.assertEquals("(6 4 1 3 2 2 1 2 )", nuevo.toString());
+		Assert.assertFalse(iterator.hasNext());
+		iterator.next();
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void oddPositionsIteratorTest() {
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		lista.addFirst("2");
+		lista.addLast("3");
+		Assert.assertEquals("(2 3 )", lista.toString());
+		lista.addLast("1");
+		Assert.assertEquals("(2 3 1 )", lista.toString());
+			
+		lista.addBefore("1", "2");
+		Assert.assertEquals("(1 2 3 1 )", lista.toString());
+		
+		lista.addBefore("2", "2");
+		Assert.assertEquals("(1 2 2 3 1 )", lista.toString());
+		
+		lista.addBefore("2", "1");
+		Assert.assertEquals("(2 1 2 2 3 1 )", lista.toString());
+		
+		Iterator<String> iterator = lista.oddPositionsIterator();
+		StringBuffer nuevo = new StringBuffer("(");
+		while(iterator.hasNext()) {
+			nuevo.append(iterator.next()+ " ");
+		}
+		nuevo.append(")");
+		Assert.assertEquals("(2 2 3 )", nuevo.toString());
+		Assert.assertFalse(iterator.hasNext());
+		iterator.next();
+	}
 
+	@Test
+	public void testCopy() {
+		Assert.assertEquals(6, listaConElems.size());
+		Assert.assertEquals(listaConElems.copy().toString(), listaConElems.toString());
+	}
 }

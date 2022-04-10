@@ -40,7 +40,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 		@Override
 		public boolean hasNext() {
-			return (node.next!=null);
+			return (node!=null);
 		}
 	
 
@@ -67,7 +67,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 		@Override
 		public boolean hasNext() {
-			return(node.prev != null);
+			return(node != null);
 			}
 
 		@Override
@@ -83,20 +83,29 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	@SuppressWarnings("hiding")
 	private class DoubleLinkedListIteratorOddPositions<T> implements Iterator<T> {
 		DoubleNode<T> node;
+		boolean previous = true;
 		public DoubleLinkedListIteratorOddPositions(DoubleNode<T> aux) {
 			node = aux;
 		}
 
 		@Override
 		public boolean hasNext() {
-			if(node == null) {
-				return false;
-			}else if(node.next == null) {
-				return false;
-			}else if(node.next.next == null) {
-				return false;
+			if(size()==1) {
+				if(node == null) {
+					return false;
+				}else {
+					return true;
+				}
 			}else {
-				return true;
+				if(node == null) {
+					return false;
+				}else if(node.next == null) {
+					return false;
+				}else if( previous == false && node.next.next == null) {
+					return false;
+				}else {
+					return true;
+				}
 			}
 		}
 
@@ -105,7 +114,11 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			if (! hasNext())
 				throw new NoSuchElementException();
 				T result = node.elem;
-				node = node.next.next;
+				if(size()==1) {
+					node = null;
+				}else {
+					node = node.next.next;
+				}
 				return result; 
 			}		
 	}
@@ -124,11 +137,11 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			boolean hasnext = false;
 			paux = node;
 			for(int i = 0; i < progress; i++) {
-				if(paux != null && paux.next != null) {
-					paux = paux.next;
+				if(paux != null && paux.prev != null) {
+					paux = paux.prev;
 				}
 			}
-			if(paux != null) {
+			if(paux.prev != null) {
 				hasnext = true;
 			}
 			return hasnext;
@@ -144,7 +157,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 					result = node.elem;
 				}else {
 				for(int i = 0; i < progress; i++) {
-					node=node.next;
+					node=node.prev;
 				}
 				result = node.elem;
 				progress++;
@@ -446,6 +459,10 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			throw new EmptyCollectionException("");
 		}else if(size()==1) {
 			throw new NoSuchElementException();
+		}else if(size()==2) {
+			result = front.next;
+			front.next = null;
+			last = front;
 		}else {
 			result = front.next;
 			front.next.next.prev = front;
@@ -459,7 +476,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	@Override
 	public DoubleList<T> copy() {
 		DoubleLinkedListImpl<T> copia = new DoubleLinkedListImpl<T>();
-		DoubleNode<T> current,previous,currentC,previousC;
+		DoubleNode<T> current;
 		if(isEmpty()) {
 			return copia;
 		}else if(size() == 1) {
@@ -468,19 +485,10 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			copia.last = current;
 			return copia;
 		}else {
-			current = front.next;
-			previous = front;
-			copia.front = previous;
-			copia.front.next = current;
-			copia.front.next.prev = previous;
-			currentC = copia.front.next;
-			previousC = copia.front;
-			for(int i=1; i<size(); i++) {
-				previous = current;
-				current = current.next;
-				previousC = currentC;
-				currentC = current;
+			current = front;
+			for(int i=0; i<size(); i++) {
 				copia.addLast(current.elem);
+				current = current.next;
 			}
 		}
 		return copia;
